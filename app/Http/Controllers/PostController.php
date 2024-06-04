@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PostResquest;
+use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\CommentResource;
 use App\Http\Resources\PostResource;
 use App\Models\Comment;
@@ -79,9 +80,9 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Post $post)
+    public function update(UpdatePostRequest $request, Post $post)
     {
-        dd($request->all(),$post);
+//        dd($request->all(),$post);
         $data = $request->validate([
             'content' => 'required',
             'image' => 'nullable|image',
@@ -90,7 +91,11 @@ class PostController extends Controller
         $image = $data['image'] ?? null;
         $data['user_id'] = auth()->id();
         if ($image){
+            if ($post->image) {
+                Storage::disk('public')->deleteDirectory(dirname($project->image));
+            }
             $data['image']=$image -> store('post/'.Str::random(),'public');
+
         }
 
         $post->update($data);

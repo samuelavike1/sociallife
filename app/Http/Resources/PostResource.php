@@ -20,6 +20,7 @@ class PostResource extends JsonResource
         return [
             'id'=>$this->id,
             'content'=>$this->content,
+            'is_active'=>$this->is_active,
             'created_at'=>(new Carbon($this->created_at))->format('Y-m-d'),
             'updated_at'=>(new Carbon($this->updated_at))->format('Y-m-d'),
             'tag'=>$this->tag,

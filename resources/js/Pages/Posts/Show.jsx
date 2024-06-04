@@ -12,7 +12,12 @@ const ShowPost = ({ auth, posts, comments }) => {
         post_id: '',
         content: posts.content || '',
         image: posts.image || '',
+        _method: 'PATCH',
     });
+
+
+
+
     const [confirmingPostDeletion, setConfirmingPostDeletion] = useState(false);
     const [confirmingPostEdition, setConfirmingPostEdition] = useState(false);
 
@@ -32,12 +37,21 @@ const ShowPost = ({ auth, posts, comments }) => {
             preserveScroll: true,
             onSuccess: () => closeModal(),
             onFinish: () => reset(),
+
         });
     };
 
     const updatePost = (e) => {
       e.preventDefault();
-        patch(route('posts.update', posts.id));
+      post(route('posts.update', posts.id));
+        // router.patch(route('posts.update', posts.id),{
+        //     _method: 'PATCH',
+        //     // content:  '',
+        //     // image:  '',
+        //     // preserveScroll: true,
+        //     // onSuccess: () => closeModal(),
+        //     onFinish: () => reset(),
+        // })
     }
 
     const closeModal = () => {
@@ -48,6 +62,7 @@ const ShowPost = ({ auth, posts, comments }) => {
 
     const submit_comment = (e) => {
         e.preventDefault();
+        e.preserveScroll = true;
         setData('post_id', posts.id);
         post(route('comment.store'));
     };
@@ -258,11 +273,12 @@ const ShowPost = ({ auth, posts, comments }) => {
                                                 <div className="flex ps-0 space-x-1 rtl:space-x-reverse sm:ps-2">
                                                     <input
                                                         type="file"
+                                                        onChange={(e) => setData('image', e.target.files[0])}
                                                         className="hidden"
                                                         id="image-upload"
                                                         name='image'
                                                         accept="image/*"
-                                                        onChange={e => setData('image', e.target.files[0])}
+
                                                     />
 
                                                     <label htmlFor="image-upload"

@@ -1,83 +1,111 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import React from "react";
+import React, {useState} from "react";
 import ParentLayout from "@/Layouts/ParentLayout.jsx";
+
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import {InputText} from "primereact/inputtext";
+
+const imageBodyTemplate = (rowData) => {
+    return <img src={rowData.image} alt={rowData.image} width="64px" className="shadow-4" />;
+};
+
+const trimContent = (rowData) => {
+    const maxLength = 30; // Set your desired maximum length
+    const trimmedContent = rowData.content.length > maxLength
+        ? rowData.content.substring(0, maxLength) + '...' // Trim the description
+        : rowData.content;
+
+    return <span>{trimmedContent}</span>;
+};
 
 
 const AllPosts = ({ auth, posts }) => {
+
+    const [globalFilterValue, setGlobalFilterValue] = useState("");
+
+    const onGlobalFilterChange = (e, any) => {
+        const value = e.target.value;
+        setGlobalFilterValue(value);
+    };
+
+    const renderHeader = () => {
+        return (
+            <div className="flex justify-content-between">
+        <span className="p-input-icon-left">
+          <i className="pi pi-search" />
+          <InputText
+              className="rounded-lg  text-gray-800 dark:text-gray-200 leading-tight"
+              value={globalFilterValue}
+              onChange={onGlobalFilterChange}
+              placeholder="Keyword Search"
+          />
+        </span>
+            </div>
+        );
+    };
+
+    const header = renderHeader();
+
+    const statusBodyTemplate = (rowData) => {
+        return (
+            <span
+                className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${rowData.is_active === 1 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+        {rowData.is_active === 1 ? 'Active' : 'Inactive'}
+      </span>
+        );
+    };
+
     return (
         <AuthenticatedLayout
             user={auth.user}
             header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">All-Posts</h2>}
         >
-            <Head title="All-Posts" />
+            <Head title="All-Posts"/>
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    {/*<pre>{JSON.stringify(posts,undefined,2)}</pre>*/}
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        {/*<pre>{JSON.stringify(posts,undefined,2)}</pre>*/}
+                        <div className="p-5 text-gray-900 dark:text-gray-100">
+                        <DataTable
+                            className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+                            value={posts.data}
+                            paginator rows={5}
+                            rowsPerPageOptions={[5,10, 25, 50]}
+                            tableStyle={{ minWidth: '50rem' }}
+                            dataKey="id"
+                            filterDisplay="row"
+                            globalFilterFields={['content', 'user.name', 'is_active','content']}
+                            globalFilter={globalFilterValue}
+                            header={header}
+                            emptyMessage="No Post found."
+                        >
+                            <Column  field="id" header="ID" style={{ width: '5%' }}></Column>
+                            {/*<Column header="Image" field="image"></Column>*/}
+                            <Column header="Image" body={imageBodyTemplate} style={{ width: '5%' }}
+                                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                            />
+                            <Column header="content" body={trimContent}
+                                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                            ></Column>
+                            <Column field="user.name" header="Created By" style={{ width: '10%', textWrap:"nowrap"}}
+                                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                            ></Column>
+                            <Column field="is_active" header="Status" body={statusBodyTemplate}
+                                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                                    style={{ width: '10%', textWrap:"nowrap"}}
+                            ></Column>
+                            <Column field="created_at" header="Created At" style={{ width: '10%', textWrap:"nowrap" }}
+                                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                            ></Column>
+                            <Column field="updated_at" header="Updated At" style={{ width: '10%', textWrap:"nowrap" }}
+                                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                            ></Column>
 
-                        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                            <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                <thead
-                                    className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                <tr>
-                                    <th scope="col" className="px-6 py-3">
-                                        Post
-                                    </th>
-                                    <th scope="col" className="px-6 py-3">
-                                        Image
-                                    </th>
-                                    <th scope="col" className="px-6 py-3">
-                                        Created By
-                                    </th>
-                                    <th scope="col" className="px-6 py-3">
-                                        Date
-                                    </th>
-                                    <th scope="col" className="px-6 py-3">
-                                        Status
-                                    </th>
-                                    <th scope="col" className="px-6 py-3">
-                                        <span className="sr-only">Actions</span>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {posts.data.map((post) => (
-                                <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                    <th scope="row"
-                                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        {post.content.trim().length > 30 ? post.content.trim().substring(0, 30) + '...' : post.content}
-                                    </th>
-                                    <td className="px-6 py-4">
-                                        <img src={post.image} alt='image' className="w-10 rounded"/>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        {post.user.name}
-                                    </td>
-                                    <td className="px-6 py-4 text-nowrap">
-                                        {post.created_at}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span
-                                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${post.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                            {'post.status'}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-4 text-right space-x-4">
-                                        <a href="#"
-                                           className="font-medium text-amber-600 dark:text-amber-500 hover:underline">View</a>
-                                        <a href="#"
-                                           className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                                        <a href="#"
-                                           className="font-medium text-red-500 hover:underline">Delete</a>
-                                    </td>
-                                </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                        </DataTable>
                         </div>
-
                     </div>
                 </div>
             </div>

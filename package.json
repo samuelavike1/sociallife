@@ -21,6 +21,7 @@
     },
     "dependencies": {
         "flowbite": "^2.3.0",
+        "primereact": "^10.6.6",
         "react-toastify": "^10.0.5"
     }
 }
