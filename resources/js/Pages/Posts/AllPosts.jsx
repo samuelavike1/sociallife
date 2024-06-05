@@ -14,7 +14,7 @@ const imageBodyTemplate = (rowData) => {
 const trimContent = (rowData) => {
     const maxLength = 30; // Set your desired maximum length
     const trimmedContent = rowData.content.length > maxLength
-        ? rowData.content.substring(0, maxLength) + '...' // Trim the description
+        ? rowData.content.substring(0, maxLength) + '...' // Trim the post content
         : rowData.content;
 
     return <span>{trimmedContent}</span>;
