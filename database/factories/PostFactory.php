@@ -2,16 +2,14 @@
 
 namespace Database\Factories;
 
-use App\Models\Post;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Comment>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Post>
  */
-class CommentFactory extends Factory
+class PostFactory extends Factory
 {
-    protected $model = \App\Models\Comment::class;
     /**
      * Define the model's default state.
      *
@@ -20,8 +18,11 @@ class CommentFactory extends Factory
     public function definition(): array
     {
         return [
-            'comment' => $this->faker->sentence,
+//            'title' => $this->faker->sentence,
+            'content' => $this->faker->paragraph(),
             'user_id' => User::all()->random()->id,
+//            'image' => $this->faker->imageUrl(),
+            'is_active' => $this->faker->boolean,
         ];
     }
 }
